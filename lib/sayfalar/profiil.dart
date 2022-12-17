@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +19,9 @@ class Profil extends StatefulWidget {
 }
 
 class _ProfilState extends State<Profil> {
-  int _ilanSayisi = 0;
+  int _gonderiSayisi = 0;
   int _abone = 0;
+  List<Gonderi> _gonderiler = [];
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
@@ -31,11 +31,23 @@ class _ProfilState extends State<Profil> {
     });
   }
 
+  _gonderilerGetir() async {
+    List<Gonderi> gonderiler =
+        await FireStoreServisi().gonderileriGetir(widget.profilSahibiId);
+    if (mounted) {
+      setState(() {
+        _gonderiler = gonderiler;
+        _gonderiSayisi = _gonderiler.length;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _aboneSayisiGetir();
+    _gonderilerGetir();
   }
 
   @override
@@ -44,15 +56,15 @@ class _ProfilState extends State<Profil> {
       appBar: AppBar(
         title: Text(
           "Profil",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.orange,
         actions: [
           IconButton(
               onPressed: _cikisYap,
               icon: Icon(
                 Icons.exit_to_app,
-                color: Colors.black,
+                color: Colors.white,
               ))
         ],
       ),
@@ -68,6 +80,12 @@ class _ProfilState extends State<Profil> {
               ],
             );
           }),
+    );
+  }
+
+  Widget _gonderileriGoster() {
+    return SizedBox(
+      height: 0,
     );
   }
 
@@ -91,7 +109,7 @@ class _ProfilState extends State<Profil> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _sosyalSayac(baslik: "İlanlar", sayi: _ilanSayisi),
+                    _sosyalSayac(baslik: "İlanlar", sayi: _gonderiSayisi),
                     _sosyalSayac(baslik: "Aboneler", sayi: _abone),
                   ],
                 ),

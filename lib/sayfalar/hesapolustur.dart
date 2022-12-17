@@ -22,7 +22,10 @@ class _HesapOlusturState extends State<HesapOlustur> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hesap Oluştur"),
+        title: Text(
+          "Hesap Oluştur",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: ListView(
         children: [
