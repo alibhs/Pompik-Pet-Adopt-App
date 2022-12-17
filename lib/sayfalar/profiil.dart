@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
+import 'package:pet_adopt/widgetlar/gonderikarti.dart';
 import 'package:provider/provider.dart';
 
 import 'package:pet_adopt/servisler/yetkilendirmeservisi.dart';
@@ -22,6 +23,7 @@ class _ProfilState extends State<Profil> {
   int _gonderiSayisi = 0;
   int _abone = 0;
   List<Gonderi> _gonderiler = [];
+  String gonderiStili = "liste";
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
@@ -77,15 +79,50 @@ class _ProfilState extends State<Profil> {
             return ListView(
               children: [
                 _profilDetaylari(snapshot.data!),
+                _gonderileriGoster(snapshot.data!),
+                //gonderigoster ve profildetaylari widgetina kullanici bilgilerini gönderdik
               ],
             );
           }),
     );
   }
 
-  Widget _gonderileriGoster() {
-    return SizedBox(
-      height: 0,
+  Widget _gonderileriGoster(Kullanici profilData) {
+    if (gonderiStili == "liste") {
+      return ListView.builder(
+          shrinkWrap: true,
+          primary: false, //kaydırma yapmaya ihtiyacın yoksa kaydırma yapma
+          itemCount: _gonderiler.length,
+          itemBuilder: (context, index) {
+            return GonderiKarti(
+                gonderi: _gonderiler[index], yayinlayanId: profilData);
+          });
+    } else {
+      List<GridTile> fayanslar = [];
+      _gonderiler.forEach((gonderi) {
+        //ilanları fayanslar listesine ekleyip gridtile şeklinde döndürdük
+        fayanslar.add(_fayansOlustur(gonderi));
+      });
+      return GridView.count(
+        shrinkWrap:
+            true, //sadece ihtiyacı kadar olanı kaplar diğer widgetlerin üstüne geçmez
+        crossAxisCount: 3,
+        mainAxisSpacing: 2.0,
+        crossAxisSpacing: 2.0,
+        childAspectRatio: 1.0,
+        physics: NeverScrollableScrollPhysics(),
+        children: fayanslar,
+      );
+    }
+  }
+
+  GridTile _fayansOlustur(Gonderi gonderi) {
+    //resimleri veritabanından çektik
+    return GridTile(
+      child: Image.network(
+        gonderi.gonderiResmiUrl!,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
@@ -170,7 +207,6 @@ class _ProfilState extends State<Profil> {
   }
 
   void _cikisYap() {
-    final _yetkilendirmeServisi =
-        Provider.of<YetkilendirmeServisi>(context, listen: false).cikisYap();
+    Provider.of<YetkilendirmeServisi>(context, listen: false).cikisYap();
   }
 }
