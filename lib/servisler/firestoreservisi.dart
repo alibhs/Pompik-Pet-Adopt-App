@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pet_adopt/modeller/duyuru.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
+import 'package:pet_adopt/sayfalar/duyurular.dart';
 
 class FireStoreServisi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -38,6 +40,55 @@ class FireStoreServisi {
     });
   }
 
+  Future<List<Kullanici>> kullaniciAra(String kelime) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("kullanicilar")
+        .where("kullaniciAdi", isGreaterThanOrEqualTo: kelime)
+        .get();
+
+    List<Kullanici> kullanicilar =
+        snapshot.docs.map((doc) => Kullanici.dokumandanUret(doc)).toList();
+    return kullanicilar;
+  }
+
+  void aboneOl({String? aktifKullanciId, String? profilSahibiId}) {
+    _firestore
+        .collection("aboneler")
+        .doc(profilSahibiId)
+        .collection("kullanicininAboneleri")
+        .doc(aktifKullanciId)
+        .set({});
+  }
+
+  void aboneliktenCik({String? aktifKullanciId, String? profilSahibiId}) {
+    _firestore
+        .collection("aboneler")
+        .doc(profilSahibiId)
+        .collection("kullanicininAboneleri")
+        .doc(aktifKullanciId)
+        .get()
+        .then((DocumentSnapshot doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  Future<bool> aboneKontrol(
+      {String? aktifKullanciId, String? profilSahibiId}) async {
+    DocumentSnapshot doc = await _firestore
+        .collection("aboneler")
+        .doc(profilSahibiId)
+        .collection("kullanicininAboneleri")
+        .doc(aktifKullanciId)
+        .get();
+
+    if (doc.exists) {
+      return true;
+    }
+    return false;
+  }
+
   Future<int> aboneSayisi(kullaniciId) async {
     QuerySnapshot snapshot = await _firestore
         .collection("aboneler")
@@ -45,6 +96,44 @@ class FireStoreServisi {
         .collection("kullanicininAboneleri")
         .get();
     return snapshot.docs.length;
+  }
+
+  void duyuruEkle(
+      {String? aktiviteYapanId,
+      String? profilSahibiId,
+      String? aktiviteTipi,
+      String? yorum,
+      Gonderi? gonderi}) {
+    _firestore
+        .collection("duyurular")
+        .doc(profilSahibiId)
+        .collection("kullanicininDuyurulari")
+        .add({
+      "aktiviteYapanId": aktiviteYapanId,
+      "aktiviteTipi": aktiviteTipi,
+      "gonderiId": gonderi?.id,
+      "gonderiFoto": gonderi?.gonderiResmiUrl,
+      "yorum": yorum,
+      "olusturulmaZamani": zaman
+    });
+  }
+
+  Future<List<Duyuru>> duyurulariGetir(String profilSahibiId) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("duyurular")
+        .doc(profilSahibiId)
+        .collection("kullanicininDuyurulari")
+        .orderBy("olusturulmaZamani", descending: true)
+        .limit(20)
+        .get();
+
+    List<Duyuru> duyurular = [];
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Duyuru duyuru = Duyuru.dokumandanUret(doc);
+      duyurular.add(duyuru);
+    });
+
+    return duyurular;
   }
 
   Future<void> gonderiOlustur(
@@ -75,6 +164,17 @@ class FireStoreServisi {
     return gonderiler;
   }
 
+  tekliGonderiGetir(String gonderiId, String gonderiSahibiId) async {
+    DocumentSnapshot doc = await _firestore
+        .collection("gonderiler")
+        .doc(gonderiSahibiId)
+        .collection("kullaniciGonderileri")
+        .doc(gonderiId)
+        .get();
+    Gonderi gonderi = Gonderi.dokumandanUret(doc);
+    return gonderi;
+  }
+
   Future<void> gonderiBegen(Gonderi gonderi, String aktifKullaniciId) async {
     DocumentReference docRef = _firestore
         .collection("gonderiler")
@@ -98,6 +198,13 @@ class FireStoreServisi {
           .collection("gonderiBegenileri")
           .doc(aktifKullaniciId)
           .set({});
+      //Beğeni haberlerini gönderi sahibine iletiyoruz.
+      duyuruEkle(
+        aktiviteTipi: "begeni",
+        aktiviteYapanId: aktifKullaniciId,
+        gonderi: gonderi,
+        profilSahibiId: gonderi.yayinlayanId,
+      );
     }
   }
 

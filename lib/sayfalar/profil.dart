@@ -27,6 +27,7 @@ class _ProfilState extends State<Profil> {
   String gonderiStili = "liste";
   String? _aktifKullaniciId;
   Kullanici? _profilSahibi;
+  bool _aboneOlundu = false;
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
@@ -51,6 +52,16 @@ class _ProfilState extends State<Profil> {
     }
   }
 
+  _aboneKontrol() async {
+    bool aboneVarMi = await FireStoreServisi().aboneKontrol(
+        profilSahibiId: widget.profilSahibiId,
+        aktifKullanciId: _aktifKullaniciId);
+
+    setState(() {
+      _aboneOlundu = aboneVarMi;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -60,6 +71,7 @@ class _ProfilState extends State<Profil> {
     _aktifKullaniciId =
         Provider.of<YetkilendirmeServisi>(context, listen: false)
             .aktifKullaniciId;
+    _aboneKontrol();
   }
 
   @override
@@ -71,13 +83,19 @@ class _ProfilState extends State<Profil> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.orange,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-              onPressed: _cikisYap,
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ))
+          //sadece kendi profil sayfamızda çıkış yap ikonu görünecek
+          widget.profilSahibiId == _aktifKullaniciId
+              ? IconButton(
+                  onPressed: _cikisYap,
+                  icon: Icon(
+                    Icons.exit_to_app,
+                    color: Colors.white,
+                  ))
+              : SizedBox(
+                  height: 0.0,
+                )
         ],
       ),
       body: FutureBuilder<Kullanici?>(
@@ -181,8 +199,56 @@ class _ProfilState extends State<Profil> {
           ),
           widget.profilSahibiId == _aktifKullaniciId
               ? _profiliDuzenleButon()
-              : Text("Takip et")
+              : _aboneButonu()
         ],
+      ),
+    );
+  }
+
+  Widget _aboneButonu() {
+    return _aboneOlundu ? _abonedenCikButonu() : _aboneOlButonu();
+  }
+
+  Widget _aboneOlButonu() {
+    return Container(
+      width: double.infinity,
+      child: TextButton(
+        style: TextButton.styleFrom(
+            backgroundColor: Theme.of(context).primaryColor),
+        onPressed: () {
+          FireStoreServisi().aboneOl(
+              profilSahibiId: widget.profilSahibiId,
+              aktifKullanciId: _aktifKullaniciId);
+          setState(() {
+            _aboneOlundu = true;
+            _abone = _abone + 1;
+          });
+        },
+        child: Text(
+          "Abone Ol",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  Widget _abonedenCikButonu() {
+    return Container(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          FireStoreServisi().aboneliktenCik(
+              profilSahibiId: widget.profilSahibiId,
+              aktifKullanciId: _aktifKullaniciId);
+          setState(() {
+            _aboneOlundu = false;
+            _abone = _abone - 1;
+          });
+        },
+        child: Text(
+          "Abonelikten Çık",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
