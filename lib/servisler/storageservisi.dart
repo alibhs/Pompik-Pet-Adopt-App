@@ -16,4 +16,14 @@ class StorageServisi {
     String yuklenenResimUrl = await snapshot.ref.getDownloadURL();
     return yuklenenResimUrl;
   }
+
+  Future<String> ProfilResmiYukle(File resimDosyasi) async {
+    resimId = Uuid().v4();
+    UploadTask yuklemeYoneticisi = _storage
+        .child("resimler/profil/profil._$resimId.jpg")
+        .putFile(resimDosyasi);
+    TaskSnapshot snapshot = await yuklemeYoneticisi;
+    String yuklenenResimUrl = await snapshot.ref.getDownloadURL();
+    return yuklenenResimUrl;
+  }
 }

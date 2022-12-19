@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
+import 'package:pet_adopt/sayfalar/profiliduzenle.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:pet_adopt/widgetlar/gonderikarti.dart';
 import 'package:provider/provider.dart';
@@ -24,23 +25,29 @@ class _ProfilState extends State<Profil> {
   int _abone = 0;
   List<Gonderi> _gonderiler = [];
   String gonderiStili = "liste";
+  String? _aktifKullaniciId;
+  Kullanici? _profilSahibi;
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
         await FireStoreServisi().aboneSayisi(widget.profilSahibiId);
-    setState(() {
-      _abone = aboneSayisi;
-    });
+    if (mounted) {
+      setState(() {
+        _abone = aboneSayisi;
+      });
+    }
   }
 
   _gonderilerGetir() async {
     List<Gonderi> gonderiler =
         await FireStoreServisi().gonderileriGetir(widget.profilSahibiId);
     if (mounted) {
-      setState(() {
-        _gonderiler = gonderiler;
-        _gonderiSayisi = _gonderiler.length;
-      });
+      if (mounted) {
+        setState(() {
+          _gonderiler = gonderiler;
+          _gonderiSayisi = _gonderiler.length;
+        });
+      }
     }
   }
 
@@ -50,6 +57,9 @@ class _ProfilState extends State<Profil> {
     super.initState();
     _aboneSayisiGetir();
     _gonderilerGetir();
+    _aktifKullaniciId =
+        Provider.of<YetkilendirmeServisi>(context, listen: false)
+            .aktifKullaniciId;
   }
 
   @override
@@ -76,6 +86,8 @@ class _ProfilState extends State<Profil> {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
+            _profilSahibi = snapshot
+                .data; //profildüzenle kısmana bilgileri göndermek amaciyla kaydettik
             return ListView(
               children: [
                 _profilDetaylari(snapshot.data!),
@@ -167,7 +179,9 @@ class _ProfilState extends State<Profil> {
           SizedBox(
             height: 20.0,
           ),
-          _profiliDuzenleButon()
+          widget.profilSahibiId == _aktifKullaniciId
+              ? _profiliDuzenleButon()
+              : Text("Takip et")
         ],
       ),
     );
@@ -177,7 +191,14 @@ class _ProfilState extends State<Profil> {
     return Container(
       width: double.infinity,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) => ProfiliDuzenle(
+                        profil: _profilSahibi,
+                      ))));
+        },
         child: Text(
           "Profili Düzenle",
           style: TextStyle(color: Colors.black),

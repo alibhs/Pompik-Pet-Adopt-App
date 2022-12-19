@@ -15,6 +15,7 @@ class Gonderi {
       this.yayinlayanId,
       this.begeniSayisi,
       this.konum});
+
   factory Gonderi.dokumandanUret(DocumentSnapshot doc) {
     return Gonderi(
         id: doc.id,

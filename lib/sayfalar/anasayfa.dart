@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pet_adopt/sayfalar/akis.dart';
 import 'package:pet_adopt/sayfalar/ara.dart';
 import 'package:pet_adopt/sayfalar/duyurular.dart';
-import 'package:pet_adopt/sayfalar/profiil.dart';
+import 'package:pet_adopt/sayfalar/mesaj.dart';
+import 'package:pet_adopt/sayfalar/profil.dart';
 import 'package:pet_adopt/sayfalar/yukle.dart';
 import 'package:pet_adopt/servisler/yetkilendirmeservisi.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +55,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
           Profil(
             profilSahibiId: aktifKullaniciId,
           ),
+          MesajKutusu(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -62,12 +64,13 @@ class _AnaSayfaState extends State<AnaSayfa> {
         unselectedItemColor: Colors.grey[600],
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Akış"),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: "Keşfet"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Ara"),
           BottomNavigationBarItem(
               icon: Icon(Icons.file_upload), label: "Yükle"),
           BottomNavigationBarItem(
               icon: Icon(Icons.notifications), label: "Duyurular"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: "Mesajlar"),
         ],
         onTap: (secilenSayfaNo) {
           setState(() {

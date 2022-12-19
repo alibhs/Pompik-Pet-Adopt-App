@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class Duyurular extends StatefulWidget {
   const Duyurular({Key? key}) : super(key: key);
