@@ -26,4 +26,15 @@ class StorageServisi {
     String yuklenenResimUrl = await snapshot.ref.getDownloadURL();
     return yuklenenResimUrl;
   }
+
+  Future<void> gonderiResmiSil(String? gonderiResmiUrl) async {
+    //storage içindeki silinecek fotoğrafın linkinden id kısmını getirtmek için regexp kullandık
+    RegExp arama = RegExp(r"gonderi\._.+\.jpg");
+    var eslesme = arama.firstMatch(gonderiResmiUrl!);
+    String? dosyaAdi = eslesme![0];
+
+    if (dosyaAdi != null) {
+      await _storage.child("resimler/gonderiler/$dosyaAdi").delete();
+    }
+  }
 }

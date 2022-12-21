@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_adopt/modeller/duyuru.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
-import 'package:pet_adopt/sayfalar/duyurular.dart';
+import 'package:pet_adopt/servisler/storageservisi.dart';
 
 class FireStoreServisi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,6 +58,13 @@ class FireStoreServisi {
         .collection("kullanicininAboneleri")
         .doc(aktifKullanciId)
         .set({});
+
+    //abone olma bildirimi gidecek
+    duyuruEkle(
+      aktiviteTipi: "abone",
+      aktiviteYapanId: aktifKullanciId,
+      profilSahibiId: profilSahibiId,
+    );
   }
 
   void aboneliktenCik({String? aktifKullanciId, String? profilSahibiId}) {
@@ -104,6 +111,11 @@ class FireStoreServisi {
       String? aktiviteTipi,
       String? yorum,
       Gonderi? gonderi}) {
+    if (aktiviteYapanId == profilSahibiId) {
+      //kullanicinin kendine bildirim yaratmasını engelledik
+      return;
+    }
+
     _firestore
         .collection("duyurular")
         .doc(profilSahibiId)
@@ -162,6 +174,51 @@ class FireStoreServisi {
     List<Gonderi> gonderiler =
         snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
     return gonderiler;
+  }
+
+  Future<void> gonderiSil({String? aktifKullaniciId, Gonderi? gonderi}) async {
+    _firestore
+        .collection("gonderiler")
+        .doc(aktifKullaniciId)
+        .collection("kullaniciGonderileri")
+        .doc(gonderi!.id)
+        .get()
+        .then((DocumentSnapshot doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    //Gonderi ait yorumlari silmek için
+
+    QuerySnapshot yorumlarSnapshot = await _firestore
+        .collection("yorumlar")
+        .doc(gonderi.id)
+        .collection("gonderiYorumlari")
+        .get();
+    yorumlarSnapshot.docs.forEach((DocumentSnapshot doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    //Gonderiye ait duyurulari silmek için
+
+    QuerySnapshot duyurularSnapshot = await _firestore
+        .collection("duyurular")
+        .doc(gonderi.yayinlayanId)
+        .collection("kullanicininDuyurulari")
+        .where("gonderiId", isEqualTo: gonderi.id)
+        .get();
+
+    duyurularSnapshot.docs.forEach((DocumentSnapshot doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    //Gonderiye ait resmi silmek için
+    StorageServisi().gonderiResmiSil(gonderi.gonderiResmiUrl!);
   }
 
   tekliGonderiGetir(String gonderiId, String gonderiSahibiId) async {
@@ -270,5 +327,13 @@ class FireStoreServisi {
       "yayinlayanId": aktifKullaniciId,
       "olusturulmaZamani": zaman,
     });
+
+    //Yorum duyurusunu gönderi sahibine iletiyoruz.
+    duyuruEkle(
+        aktiviteTipi: "yorum",
+        aktiviteYapanId: aktifKullaniciId,
+        gonderi: gonderi,
+        profilSahibiId: gonderi.yayinlayanId,
+        yorum: icerik);
   }
 }

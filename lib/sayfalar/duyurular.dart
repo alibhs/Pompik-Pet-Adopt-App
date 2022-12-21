@@ -7,6 +7,7 @@ import 'package:pet_adopt/sayfalar/tekligonderi.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:pet_adopt/servisler/yetkilendirmeservisi.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Duyurular extends StatefulWidget {
   const Duyurular({Key? key}) : super(key: key);
@@ -28,9 +29,10 @@ class _DuyurularState extends State<Duyurular> {
         Provider.of<YetkilendirmeServisi>(context, listen: false)
             .aktifKullaniciId;
     duyurulariGetir();
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
   }
 
-  duyurulariGetir() async {
+  Future<void> duyurulariGetir() async {
     List<Duyuru> duyurular =
         await FireStoreServisi().duyurulariGetir(_aktifKullaniciId!);
 
@@ -52,17 +54,21 @@ class _DuyurularState extends State<Duyurular> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 12.0),
-      child: ListView.builder(
-          itemCount: _duyurular!.length,
-          itemBuilder: (context, index) {
-            Duyuru duyuru = _duyurular![index];
-            return duyuruSatiri(duyuru);
-          }),
+      //sayfayı kaydırıp yenilemek için
+      child: RefreshIndicator(
+        onRefresh: duyurulariGetir,
+        child: ListView.builder(
+            itemCount: _duyurular!.length,
+            itemBuilder: (context, index) {
+              Duyuru duyuru = _duyurular![index];
+              return duyuruSatiri(duyuru);
+            }),
+      ),
     );
   }
 
   duyuruSatiri(Duyuru duyuru) {
-    String mesaj = mesajOlustur(duyuru.aktiviteTipi!);
+    String? mesaj = mesajOlustur(duyuru.aktiviteTipi!);
     return FutureBuilder(
         //bildirimi yapanın ismine ve fotoğrafına erişmek için
         future: FireStoreServisi().kullaniciGetir(duyuru.aktiviteYapanId),
@@ -102,21 +108,25 @@ class _DuyurularState extends State<Duyurular> {
                         color: Colors.black, fontWeight: FontWeight.bold),
                     children: [
                       TextSpan(
-                          text: " $mesaj",
+                          text: duyuru.yorum == null
+                              ? " $mesaj"
+                              : " $mesaj ${duyuru.yorum}",
                           style: TextStyle(fontWeight: FontWeight.normal))
                     ]),
               ),
+              subtitle: Text(timeago.format(duyuru.olusturulmaZamani!.toDate(),
+                  locale: "tr")),
               trailing: gonderiGorsel(
                   duyuru.aktiviteTipi!,
-                  duyuru.gonderiFoto!,
+                  duyuru.gonderiFoto,
                   duyuru
-                      .gonderiId!) // beğeni ve yorumda postun fotoğrafını sağ tarafta göstermek ,
+                      .gonderiId) // beğeni ve yorumda postun fotoğrafını sağ tarafta göstermek ,
               );
         });
   }
 
-  gonderiGorsel(String aktiviteTipi, String gonderiFoto, String gonderiId) {
-    if (aktiviteTipi == "takip") {
+  gonderiGorsel(String aktiviteTipi, String? gonderiFoto, String? gonderiId) {
+    if (aktiviteTipi == "abone") {
       return null;
     } else if (aktiviteTipi == "begeni" || aktiviteTipi == "yorum") {
       return GestureDetector(
@@ -129,7 +139,7 @@ class _DuyurularState extends State<Duyurular> {
                       gonderiSahibiId: _aktifKullaniciId)));
         },
         child: Image.network(
-          gonderiFoto,
+          gonderiFoto!,
           width: 50,
           height: 50,
           fit: BoxFit.cover,
@@ -141,7 +151,7 @@ class _DuyurularState extends State<Duyurular> {
   mesajOlustur(String aktiviteTipi) {
     if (aktiviteTipi == "begeni") {
       return "gönderini beğendi.";
-    } else if (aktiviteTipi == "takip") {
+    } else if (aktiviteTipi == "abone") {
       return "seni takip etti.";
     } else if (aktiviteTipi == "yorum") {
       return "gönderine yorum yaptı.";

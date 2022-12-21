@@ -1,11 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
+import 'package:pet_adopt/sayfalar/profil.dart';
 import 'package:pet_adopt/sayfalar/yorumlar.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:pet_adopt/servisler/yetkilendirmeservisi.dart';
@@ -65,6 +62,38 @@ class _GonderiKartiState extends State<GonderiKarti> {
         ));
   }
 
+  gonderiSecenekleri() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Seçiminiz Nedir ?"),
+            children: [
+              SimpleDialogOption(
+                child: Text("İlanı Sil",
+                    style: TextStyle(fontWeight: FontWeight.w400)),
+                onPressed: () {
+                  FireStoreServisi().gonderiSil(
+                      aktifKullaniciId: _aktifKullaniciId,
+                      gonderi: widget.gonderi);
+                  Navigator.pop(context);
+                },
+              ),
+              SimpleDialogOption(
+                child: Text(
+                  "Vazgeç",
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w400),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
+
   Widget _gonderiBasligi() {
     return ListTile(
       leading: Padding(
@@ -80,7 +109,11 @@ class _GonderiKartiState extends State<GonderiKarti> {
         widget.yayinlayanId!.kullaniciAdi!,
         style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
       ),
-      trailing: IconButton(onPressed: null, icon: Icon(Icons.more_vert)),
+      trailing: _aktifKullaniciId == widget.gonderi!.yayinlayanId!
+          ? IconButton(
+              onPressed: () => gonderiSecenekleri(),
+              icon: Icon(Icons.more_vert))
+          : null,
       contentPadding:
           EdgeInsets.all(0.0), //list tile'ın default padingini sifirladik
     );

@@ -28,6 +28,7 @@ class _ProfilState extends State<Profil> {
   String? _aktifKullaniciId;
   Kullanici? _profilSahibi;
   bool _aboneOlundu = false;
+  
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
@@ -43,12 +44,10 @@ class _ProfilState extends State<Profil> {
     List<Gonderi> gonderiler =
         await FireStoreServisi().gonderileriGetir(widget.profilSahibiId);
     if (mounted) {
-      if (mounted) {
-        setState(() {
-          _gonderiler = gonderiler;
-          _gonderiSayisi = _gonderiler.length;
-        });
-      }
+      setState(() {
+        _gonderiler = gonderiler;
+        _gonderiSayisi = _gonderiler.length;
+      });
     }
   }
 
@@ -61,6 +60,8 @@ class _ProfilState extends State<Profil> {
       _aboneOlundu = aboneVarMi;
     });
   }
+
+ 
 
   @override
   void initState() {
