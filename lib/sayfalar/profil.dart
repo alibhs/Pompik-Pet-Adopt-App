@@ -28,15 +28,16 @@ class _ProfilState extends State<Profil> {
   String? _aktifKullaniciId;
   Kullanici? _profilSahibi;
   bool _aboneOlundu = false;
-  
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
         await FireStoreServisi().aboneSayisi(widget.profilSahibiId);
     if (mounted) {
-      setState(() {
-        _abone = aboneSayisi;
-      });
+      if (mounted) {
+        setState(() {
+          _abone = aboneSayisi;
+        });
+      }
     }
   }
 
@@ -61,8 +62,6 @@ class _ProfilState extends State<Profil> {
     });
   }
 
- 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -83,6 +82,7 @@ class _ProfilState extends State<Profil> {
           "Profil",
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         backgroundColor: Colors.orange,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [

@@ -176,6 +176,16 @@ class FireStoreServisi {
     return gonderiler;
   }
 
+  Future<List<Gonderi>> akislariGetir() async {
+    QuerySnapshot snapshot = await _firestore
+        .collectionGroup("kullaniciGonderileri")
+        .orderBy("olusturulmaZamani", descending: true)
+        .get();
+    List<Gonderi> gonderiler =
+        snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
+    return gonderiler;
+  }
+
   Future<void> gonderiSil({String? aktifKullaniciId, Gonderi? gonderi}) async {
     _firestore
         .collection("gonderiler")

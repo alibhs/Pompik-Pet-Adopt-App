@@ -26,6 +26,10 @@ class _HesapOlusturState extends State<HesapOlustur> {
           "Hesap Oluştur",
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: Colors.white, //change your color here
+        ),
       ),
       body: ListView(
         children: [

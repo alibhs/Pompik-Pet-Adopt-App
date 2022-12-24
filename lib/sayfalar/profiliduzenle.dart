@@ -38,6 +38,7 @@ class _ProfiliDuzenleState extends State<ProfiliDuzenle> {
           "Profili Düzenle",
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(
             Icons.close,

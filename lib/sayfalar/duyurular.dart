@@ -167,6 +167,7 @@ class _DuyurularState extends State<Duyurular> {
           "Duyurular",
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         backgroundColor: Colors.orange,
       ),
       body: duyurulariGoster(),
