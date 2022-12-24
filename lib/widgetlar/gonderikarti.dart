@@ -98,16 +98,37 @@ class _GonderiKartiState extends State<GonderiKarti> {
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.only(left: 12.0),
-        child: CircleAvatar(
-          backgroundColor: Colors.blue,
-          backgroundImage: (widget.yayinlayanId!.fotoUrl!.isNotEmpty)
-              ? NetworkImage(widget.yayinlayanId!.fotoUrl!)
-              : AssetImage("assets/images/anonim_images.png") as ImageProvider,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Profil(
+                          profilSahibiId: widget.gonderi!.yayinlayanId,
+                        )));
+          },
+          child: CircleAvatar(
+            backgroundColor: Colors.blue,
+            backgroundImage: (widget.yayinlayanId!.fotoUrl!.isNotEmpty)
+                ? NetworkImage(widget.yayinlayanId!.fotoUrl!)
+                : AssetImage("assets/images/anonim_images.png")
+                    as ImageProvider,
+          ),
         ),
       ),
-      title: Text(
-        widget.yayinlayanId!.kullaniciAdi!,
-        style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+      title: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Profil(
+                        profilSahibiId: widget.gonderi!.yayinlayanId,
+                      )));
+        },
+        child: Text(
+          widget.yayinlayanId!.kullaniciAdi!,
+          style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+        ),
       ),
       trailing: _aktifKullaniciId == widget.gonderi!.yayinlayanId!
           ? IconButton(

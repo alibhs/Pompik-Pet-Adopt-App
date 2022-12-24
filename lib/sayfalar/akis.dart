@@ -3,6 +3,7 @@ import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:pet_adopt/widgetlar/gonderikarti.dart';
+import 'package:pet_adopt/widgetlar/silinmeyenFutureBuilder.dart';
 
 class Akis extends StatefulWidget {
   const Akis({Key? key}) : super(key: key);
@@ -45,7 +46,8 @@ class _AkisState extends State<Akis> {
               itemBuilder: (context, index) {
                 Gonderi gonderi = _gonderiler[index];
 
-                return FutureBuilder(
+                return SilinmeyenFutureBuilder(
+                    //aşağı kaydırınca yukarda kalan listviewlar silinmesin.
                     future:
                         FireStoreServisi().kullaniciGetir(gonderi.yayinlayanId),
                     builder: (context, AsyncSnapshot snapshot) {
