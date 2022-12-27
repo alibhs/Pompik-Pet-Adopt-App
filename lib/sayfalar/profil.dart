@@ -10,24 +10,38 @@ import 'package:provider/provider.dart';
 import 'package:pet_adopt/servisler/yetkilendirmeservisi.dart';
 
 class Profil extends StatefulWidget {
-  final String? profilSahibiId;
   const Profil({
     Key? key,
     this.profilSahibiId,
   }) : super(key: key);
+
+  final String? profilSahibiId;
 
   @override
   State<Profil> createState() => _ProfilState();
 }
 
 class _ProfilState extends State<Profil> {
-  int _gonderiSayisi = 0;
-  int _abone = 0;
-  List<Gonderi> _gonderiler = [];
   String gonderiStili = "liste";
-  String? _aktifKullaniciId;
-  Kullanici? _profilSahibi;
+
+  int _abone = 0;
   bool _aboneOlundu = false;
+  String? _aktifKullaniciId;
+  int _gonderiSayisi = 0;
+  List<Gonderi> _gonderiler = [];
+  Kullanici? _profilSahibi;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _aboneSayisiGetir();
+    _gonderilerGetir();
+    _aktifKullaniciId =
+        Provider.of<YetkilendirmeServisi>(context, listen: false)
+            .aktifKullaniciId;
+    _aboneKontrol();
+  }
 
   _aboneSayisiGetir() async {
     int aboneSayisi =
@@ -60,62 +74,6 @@ class _ProfilState extends State<Profil> {
     setState(() {
       _aboneOlundu = aboneVarMi;
     });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _aboneSayisiGetir();
-    _gonderilerGetir();
-    _aktifKullaniciId =
-        Provider.of<YetkilendirmeServisi>(context, listen: false)
-            .aktifKullaniciId;
-    _aboneKontrol();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Profil",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.orange,
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          //sadece kendi profil sayfamızda çıkış yap ikonu görünecek
-          widget.profilSahibiId == _aktifKullaniciId
-              ? IconButton(
-                  onPressed: _cikisYap,
-                  icon: Icon(
-                    Icons.exit_to_app,
-                    color: Colors.white,
-                  ))
-              : SizedBox(
-                  height: 0.0,
-                )
-        ],
-      ),
-      body: FutureBuilder<Kullanici?>(
-          future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
-          builder: (context, AsyncSnapshot<Kullanici?> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            _profilSahibi = snapshot
-                .data; //profildüzenle kısmana bilgileri göndermek amaciyla kaydettik
-            return ListView(
-              children: [
-                _profilDetaylari(snapshot.data!),
-                _gonderileriGoster(snapshot.data!),
-                //gonderigoster ve profildetaylari widgetina kullanici bilgilerini gönderdik
-              ],
-            );
-          }),
-    );
   }
 
   Widget _gonderileriGoster(Kullanici profilData) {
@@ -296,5 +254,49 @@ class _ProfilState extends State<Profil> {
 
   void _cikisYap() {
     Provider.of<YetkilendirmeServisi>(context, listen: false).cikisYap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Profil",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.orange,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          //sadece kendi profil sayfamızda çıkış yap ikonu görünecek
+          widget.profilSahibiId == _aktifKullaniciId
+              ? IconButton(
+                  onPressed: _cikisYap,
+                  icon: Icon(
+                    Icons.exit_to_app,
+                    color: Colors.white,
+                  ))
+              : SizedBox(
+                  height: 0.0,
+                )
+        ],
+      ),
+      body: FutureBuilder<Kullanici?>(
+          future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
+          builder: (context, AsyncSnapshot<Kullanici?> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            _profilSahibi = snapshot
+                .data; //profildüzenle kısmana bilgileri göndermek amaciyla kaydettik
+            return ListView(
+              children: [
+                _profilDetaylari(snapshot.data!),
+                _gonderileriGoster(snapshot.data!),
+                //gonderigoster ve profildetaylari widgetina kullanici bilgilerini gönderdik
+              ],
+            );
+          }),
+    );
   }
 }

@@ -33,6 +33,7 @@ class _YorumlarState extends State<Yorumlar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.orange,
         title: Text(
           "Yorumlar",

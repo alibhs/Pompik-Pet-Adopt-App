@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
+import 'package:pet_adopt/sayfalar/chat.dart';
 import 'package:pet_adopt/sayfalar/profil.dart';
 import 'package:pet_adopt/sayfalar/yorumlar.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
@@ -178,8 +180,25 @@ class _GonderiKartiState extends State<GonderiKarti> {
                         builder: (context) =>
                             Yorumlar(gonderi: widget.gonderi)));
               },
-              icon: Icon(Icons.comment, size: 35),
+              icon: Icon(FontAwesomeIcons.comment, size: 30),
             ),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatEkrani(
+                                profilSahibiAdi:
+                                    widget.yayinlayanId!.kullaniciAdi!,
+                                profilSahibiImage: widget.yayinlayanId!.fotoUrl,
+                                profilSahibiId: widget.gonderi!.yayinlayanId,
+                              )));
+                },
+                icon: widget.gonderi!.yayinlayanId == _aktifKullaniciId
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : Icon(FontAwesomeIcons.envelope, size: 30)),
           ],
         ),
         Padding(

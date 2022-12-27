@@ -55,7 +55,6 @@ class _AnaSayfaState extends State<AnaSayfa> {
           Profil(
             profilSahibiId: aktifKullaniciId,
           ),
-          MesajKutusu(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -70,7 +69,6 @@ class _AnaSayfaState extends State<AnaSayfa> {
           BottomNavigationBarItem(
               icon: Icon(Icons.notifications), label: "Duyurular"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: "Mesajlar"),
         ],
         onTap: (secilenSayfaNo) {
           setState(() {

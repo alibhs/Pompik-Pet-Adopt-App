@@ -346,4 +346,69 @@ class FireStoreServisi {
         profilSahibiId: gonderi.yayinlayanId,
         yorum: icerik);
   }
+
+  mesajOlustur(
+      String? kullaniciId, String? profilSahibiId, String? mesaj) async {
+    await _firestore
+        .collection("mesajlar")
+        .doc(kullaniciId)
+        .collection("sohbet")
+        .doc(profilSahibiId)
+        .collection("konusmalar")
+        .add({
+      "gonderenId": kullaniciId,
+      "mesajAlanId": profilSahibiId,
+      "mesaj": mesaj,
+      "olusturulmaZamani": DateTime.now()
+    }).then((value) {
+      _firestore
+          .collection("mesajlar")
+          .doc(kullaniciId)
+          .collection("sohbet")
+          .doc(profilSahibiId)
+          .set({"sonMesaj": mesaj});
+    });
+  }
+
+  mesajAl(String kullaniciId, String profilSahibiId, String mesaj) async {
+    await _firestore
+        .collection("mesajlar")
+        .doc(profilSahibiId)
+        .collection("sohbet")
+        .doc(kullaniciId)
+        .collection("konusmalar")
+        .add({
+      "gonderenId": kullaniciId,
+      "mesajAlanId": profilSahibiId,
+      "mesaj": mesaj,
+      "olusturulmaZamani": DateTime.now()
+    }).then((value) {
+      _firestore
+          .collection("mesajlar")
+          .doc(profilSahibiId)
+          .collection("sohbet")
+          .doc(kullaniciId)
+          .set({"sonMesaj": mesaj});
+    });
+  }
+
+  Stream<QuerySnapshot> mesajlariGetir(
+      String kullaniciId, String profilSahibiId) {
+    return _firestore
+        .collection("mesajlar")
+        .doc(kullaniciId)
+        .collection("sohbet")
+        .doc(profilSahibiId)
+        .collection("konusmalar")
+        .orderBy("olusturulmaZamani", descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> mesajKullaniciGetir(String kullaniciId) {
+    return _firestore
+        .collection("mesajlar")
+        .doc(kullaniciId)
+        .collection("sohbet")
+        .snapshots();
+  }
 }

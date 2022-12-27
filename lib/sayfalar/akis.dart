@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
+import 'package:pet_adopt/sayfalar/mesaj.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
 import 'package:pet_adopt/widgetlar/gonderikarti.dart';
 import 'package:pet_adopt/widgetlar/silinmeyenFutureBuilder.dart';
@@ -36,6 +38,20 @@ class _AkisState extends State<Akis> {
         appBar: AppBar(
           title: Text("Uygulama İsmi", style: TextStyle(color: Colors.white)),
           centerTitle: true,
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MesajKutusu()));
+                  },
+                  icon: Icon(
+                    FontAwesomeIcons.inbox,
+                    color: Colors.white,
+                  ),
+                )),
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: _akisGonderileriniGetir,
