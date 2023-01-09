@@ -36,7 +36,7 @@ class _AkisState extends State<Akis> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("İlanlar", style: TextStyle(color: Colors.white)),
+          title: Text("Pompik", style: TextStyle(color: Colors.white)),
           centerTitle: true,
           actions: [
             Padding(
