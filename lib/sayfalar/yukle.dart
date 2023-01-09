@@ -18,6 +18,12 @@ class _YukleState extends State<Yukle> {
   bool yukleniyor = false;
   TextEditingController aciklamaTextKumandasi = TextEditingController();
   TextEditingController konumTextKumandasi = TextEditingController();
+  TextEditingController yasTextKumandasi = TextEditingController();
+  TextEditingController adTextKumandasi = TextEditingController();
+  TextEditingController turTextKumandasi = TextEditingController();
+  TextEditingController cinsTextKumandasi = TextEditingController();
+  TextEditingController cinsiyetTextKumandasi = TextEditingController();
+  TextEditingController renkTextKumandasi = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +91,48 @@ class _YukleState extends State<Yukle> {
               contentPadding: EdgeInsets.only(left: 15, right: 15),
             ),
           ),
+          TextField(
+            controller: renkTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Renk",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
+          TextField(
+            controller: adTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Adı",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
+          TextField(
+            controller: cinsiyetTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Cinsiyeti",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
+          TextField(
+            controller: cinsTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Cinsi",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
+          TextField(
+            controller: turTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Türü",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
+          TextField(
+            controller: yasTextKumandasi,
+            decoration: InputDecoration(
+              hintText: "Yas",
+              contentPadding: EdgeInsets.only(left: 15, right: 15),
+            ),
+          ),
         ],
       ),
     );
@@ -101,14 +149,27 @@ class _YukleState extends State<Yukle> {
               .aktifKullaniciId;
 
       await FireStoreServisi().gonderiOlustur(
-          gonderiResmiUrl: resimUrl,
-          aciklama: aciklamaTextKumandasi.text,
-          yayinlayanId: aktifKullaniciId,
-          konum: konumTextKumandasi.text);
+        gonderiResmiUrl: resimUrl,
+        aciklama: aciklamaTextKumandasi.text,
+        yayinlayanId: aktifKullaniciId,
+        konum: konumTextKumandasi.text,
+        yas: yasTextKumandasi.text,
+        renk: renkTextKumandasi.text,
+        ad: adTextKumandasi.text,
+        cinsiyet: cinsiyetTextKumandasi.text,
+        cins: cinsTextKumandasi.text,
+        tur: turTextKumandasi.text,
+      );
       setState(() {
         yukleniyor = false;
         aciklamaTextKumandasi.clear();
         konumTextKumandasi.clear();
+        yasTextKumandasi.clear();
+        renkTextKumandasi.clear();
+        adTextKumandasi.clear();
+        cinsiyetTextKumandasi.clear();
+        cinsTextKumandasi.clear();
+        turTextKumandasi.clear();
         dosya = null;
       });
     }

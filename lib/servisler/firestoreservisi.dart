@@ -149,7 +149,16 @@ class FireStoreServisi {
   }
 
   Future<void> gonderiOlustur(
-      {gonderiResmiUrl, aciklama, yayinlayanId, konum}) async {
+      {gonderiResmiUrl,
+      aciklama,
+      yayinlayanId,
+      konum,
+      yas,
+      ad,
+      cins,
+      cinsiyet,
+      renk,
+      tur}) async {
     await _firestore
         .collection("gonderiler")
         .doc(yayinlayanId)
@@ -161,6 +170,12 @@ class FireStoreServisi {
       "konum": konum,
       "begeniSayisi": 0,
       "olusturulmaZamani": zaman,
+      "yas": yas,
+      "ad": ad,
+      "cins": cins,
+      "cinsiyet": cinsiyet,
+      "renk": renk,
+      "tur": tur,
     });
   }
 
@@ -183,6 +198,7 @@ class FireStoreServisi {
         .get();
     List<Gonderi> gonderiler =
         snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
+    print(gonderiler);
     return gonderiler;
   }
 

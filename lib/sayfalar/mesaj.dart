@@ -33,6 +33,7 @@ class _MesajKutusuState extends State<MesajKutusu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.orange,
         title: Text(

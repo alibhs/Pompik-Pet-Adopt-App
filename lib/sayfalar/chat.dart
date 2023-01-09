@@ -84,7 +84,7 @@ class _ChatEkraniState extends State<ChatEkrani> {
                   if (snapshot.data!.docs.length < 1) {
                     return Center(
                         child: Text(
-                      "Merhaba Diyerek Sohbete Başlayabilirsiniz",
+                      "Herhangi Bir Ücret Talebine Karşılık Vermeyiniz.",
                       style: TextStyle(
                         fontSize: 16,
                       ),

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       create: (_) => YetkilendirmeServisi(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Evcil Hayvan Sahiplendirme',
+        title: 'Pompik',
         theme: ThemeData(
           primarySwatch: Colors.orange,
         ),

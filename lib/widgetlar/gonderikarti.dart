@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pet_adopt/modeller/gonderi.dart';
 import 'package:pet_adopt/modeller/kullanici.dart';
 import 'package:pet_adopt/sayfalar/chat.dart';
+import 'package:pet_adopt/sayfalar/ilanDetaylari.dart';
+import 'package:pet_adopt/sayfalar/mesaj.dart';
 import 'package:pet_adopt/sayfalar/profil.dart';
 import 'package:pet_adopt/sayfalar/yorumlar.dart';
 import 'package:pet_adopt/servisler/firestoreservisi.dart';
@@ -144,7 +146,15 @@ class _GonderiKartiState extends State<GonderiKarti> {
 
   Widget _gonderiResmi() {
     return GestureDetector(
-      onDoubleTap: _begeniDegistir,
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => IlanDetay(
+                      gonderi: widget.gonderi!,
+                      kullanici: widget.yayinlayanId!,
+                    )));
+      },
       child: Image.network(
         widget.gonderi!.gonderiResmiUrl!,
         width: MediaQuery.of(context).size.width,
@@ -182,23 +192,6 @@ class _GonderiKartiState extends State<GonderiKarti> {
               },
               icon: Icon(FontAwesomeIcons.comment, size: 30),
             ),
-            IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ChatEkrani(
-                                profilSahibiAdi:
-                                    widget.yayinlayanId!.kullaniciAdi!,
-                                profilSahibiImage: widget.yayinlayanId!.fotoUrl,
-                                profilSahibiId: widget.gonderi!.yayinlayanId,
-                              )));
-                },
-                icon: widget.gonderi!.yayinlayanId == _aktifKullaniciId
-                    ? SizedBox(
-                        height: 0,
-                      )
-                    : Icon(FontAwesomeIcons.envelope, size: 30)),
           ],
         ),
         Padding(
@@ -213,22 +206,22 @@ class _GonderiKartiState extends State<GonderiKarti> {
                 .isNotEmpty //acıklama satırı girilmediyse kullanici adini da göstermeyecek
             ? Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: RichText(
-                  text: TextSpan(
-                    text: widget.yayinlayanId!.kullaniciAdi! + " ",
-                    style: TextStyle(
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                    children: [
-                      TextSpan(
-                        text: widget.gonderi!.aciklama!,
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal, fontSize: 14.0),
-                      ),
-                    ],
-                  ),
-                ),
+                // child: RichText(
+                //   text: TextSpan(
+                //     text: widget.yayinlayanId!.kullaniciAdi! + " ",
+                //     style: TextStyle(
+                //         fontSize: 15.0,
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.black),
+                //     children: [
+                //       TextSpan(
+                //         text: widget.gonderi!.aciklama!,
+                //         style: TextStyle(
+                //             fontWeight: FontWeight.normal, fontSize: 14.0),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               )
             : SizedBox(height: 0.0),
       ],
