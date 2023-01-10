@@ -198,7 +198,6 @@ class FireStoreServisi {
         .get();
     List<Gonderi> gonderiler =
         snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
-    print(gonderiler);
     return gonderiler;
   }
 

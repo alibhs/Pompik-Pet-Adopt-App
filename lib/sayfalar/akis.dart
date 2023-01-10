@@ -17,6 +17,12 @@ class Akis extends StatefulWidget {
 class _AkisState extends State<Akis> {
   List<Gonderi> _gonderiler = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _akisGonderileriniGetir();
+  }
+
   Future<void> _akisGonderileriniGetir() async {
     List<Gonderi> gonderiler = await FireStoreServisi().akislariGetir();
     if (mounted) {
@@ -24,12 +30,6 @@ class _AkisState extends State<Akis> {
         _gonderiler = gonderiler;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _akisGonderileriniGetir();
   }
 
   @override
@@ -61,7 +61,6 @@ class _AkisState extends State<Akis> {
               itemCount: _gonderiler.length,
               itemBuilder: (context, index) {
                 Gonderi gonderi = _gonderiler[index];
-
                 return SilinmeyenFutureBuilder(
                     //aşağı kaydırınca yukarda kalan listviewlar silinmesin.
                     future:
@@ -70,9 +69,7 @@ class _AkisState extends State<Akis> {
                       if (!snapshot.hasData) {
                         return SizedBox();
                       }
-
                       Kullanici gonderiSahibi = snapshot.data;
-
                       return GonderiKarti(
                           gonderi: gonderi, yayinlayanId: gonderiSahibi);
                     });
